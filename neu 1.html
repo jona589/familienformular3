@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Formular</title>
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+  padding: 10px;
+  margin: 0;
+}
+
+.container {
+  max-width: 500px;   /* für Handy kleiner als Desktop */
+  margin: auto;
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+h2, h3 {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 10px 0;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.95em;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+button {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.btn-partner { background:#4CAF50; color:white; }
+.btn-child { background:#2196F3; color:white; }
+.btn-finish { background:#ff9800; color:white; width:100%; }
+.btn-export { background:#e91e63; color:white; width:100%; }
+.btn-back { background:#607d8b; color:white; width:100%; }
+
+.person-block {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #f9f9f9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.85em;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background: #f2f2f2;
+}
+
+.lang-select {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.lang-btn {
+  font-size: 30px;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  background: white;
+}
+
+.lang-btn.active {
+  border-color: #333;
+  background: #e6f0ff;
+}
+
+.homephone-options, .child-mobile-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.hidden { display: none; }
+
+.btn-yes { background:#4CAF50; color:white; flex:1; }
+.btn-no { background:#f44336; color:white; flex:1; }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+    border-radius: 10px;
+  }
+  h2, h3 { font-size: 1.3em; }
+  input, button { font-size: 0.95em; padding: 8px; }
+  .lang-btn { font-size: 25px; padding: 6px; }
+  table { font-size: 0.8em; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2 id="title">Formular Dom-Esch</h2>
+
+<div class="lang-select">
+  <button class="lang-btn active" onclick="setLanguage('de')">Deutsch</button>
+  <button class="lang-btn" onclick="setLanguage('ru')">Russisch</button>
+</div>
+
+<div id="main-form">
+  <label id="lbl-firstname">Vorname</label><input type="text" id="firstname">
+  <label id="lbl-lastname">Nachname</label><input type="text" id="lastname">
+  <label id="lbl-age">Alter</label><input type="number" id="age">
+  <label id="lbl-street">Straße</label><input type="text" id="street">
+  <label id="lbl-zip">Postleitzahl</label><input type="text" id="zip">
+  <label id="lbl-city">Stadt</label><input type="text" id="city">
+  <label id="lbl-birth">Geburtsdatum</label><input type="date" id="birth">
+  <label id="lbl-mobile">Handynummer</label><input type="tel" id="mobile">
+
+  <label id="lbl-homephone">Haustelefonnummer</label>
+  <div class="homephone-options">
+    <button class="btn-yes" id="btn-home-yes" onclick="showHomephone()">📞 Eingeben</button>
+    <button class="btn-no" id="btn-home-no" onclick="noHomephone()">🚫 Keine</button>
+  </div>
+  <input type="tel" id="homephone" class="hidden">
+
+  <h3 id="lbl-addperson">Weitere Personen hinzufügen</h3>
+  <button class="btn-partner" onclick="addPerson('partner')">➕ Ehepartner hinzufügen</button>
+  <button class="btn-child" onclick="addPerson('child')">➕ Kind hinzufügen</button>
+  <div id="extraPersons"></div>
+
+  <button class="btn-finish" onclick="showOverview()" id="btn-finish">Sind Sie fertig?</button>
+</div>
+
+<div id="overview" style="display:none;">
+  <h2 id="overview-title">Übersicht</h2>
+  <table id="overviewTable">
+    <thead>
+      <tr>
+        <th>Rolle</th>
+        <th>Name</th>
+        <th>Geburtsdatum</th>
+        <th>Handy</th>
+        <th>Haustelefon</th>
+        <th>Straße</th>
+        <th>PLZ</th>
+        <th>Stadt</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button class="btn-export" onclick="sendData()">Abschicken</button>
+  <button class="btn-back" onclick="goBack()">Zurück</button>
+</div>
+</div>
+
+<script>
+// Dein kompletter JS-Code unverändert, wie oben
+let currentLang="de"; 
+let homephoneValue="-";
+
+const texts = {
+  de:{title:"Formular",firstname:"Vorname",lastname:"Nachname",age:"Alter",street:"Straße",zip:"Postleitzahl",city:"Stadt",birth:"Geburtsdatum",mobile:"Handynummer",homephone:"Haustelefonnummer",home_yes:"📞 Eingeben",home_no:"🚫 Keine",add:"Weitere Personen hinzufügen",finish:"Sind Sie fertig?",partner:"Ehepartner",child:"Kind",overview:"Übersicht",export:"Abschicken",thanks:"Danke für Ihre Mühe! Einen schönen Tag noch!"},
+  ru:{title:"Форма",firstname:"Имя",lastname:"Фамилия",age:"Возраст",street:"Улица",zip:"Почтовый индекс",city:"Город",birth:"Дата рождения",mobile:"Мобильный номер",homephone:"Домашний телефон",home_yes:"📞 Ввести",home_no:"🚫 Нет",add:"Добавить людей",finish:"Вы закончили?",partner:"Супруг(а)",child:"Ребёнок",overview:"Обзор",export:"Отправить",thanks:"Спасибо за ваши усилия! Хорошего дня!"}
+};
+
+function setLanguage(lang){
+  currentLang=lang;
+  document.querySelectorAll(".lang-btn").forEach(btn=>btn.classList.remove("active"));
+  if(lang==="de") document.querySelectorAll(".lang-btn")[0].classList.add("active");
+  if(lang==="ru") document.querySelectorAll(".lang-btn")[1].classList.add("active");
+
+  document.getElementById("title").innerText=texts[lang].title;
+  document.getElementById("lbl-firstname").innerText=texts[lang].firstname;
+  document.getElementById("lbl-lastname").innerText=texts[lang].lastname;
+  document.getElementById("lbl-age").innerText=texts[lang].age;
+  document.getElementById("lbl-street").innerText=texts[lang].street;
+  document.getElementById("lbl-zip").innerText=texts[lang].zip;
+  document.getElementById("lbl-city").innerText=texts[lang].city;
+  document.getElementById("lbl-birth").innerText=texts[lang].birth;
+  document.getElementById("lbl-mobile").innerText=texts[lang].mobile;
+  document.getElementById("lbl-homephone").innerText=texts[lang].homephone;
+  document.getElementById("btn-home-yes").innerText=texts[lang].home_yes;
+  document.getElementById("btn-home-no").innerText=texts[lang].home_no;
+  document.getElementById("lbl-addperson").innerText=texts[lang].add;
+  document.getElementById("btn-finish").innerText=texts[lang].finish;
+  document.getElementById("overview-title").innerText=texts[lang].overview;
+  document.querySelector(".btn-partner").innerText="➕ "+texts[lang].partner+" hinzufügen";
+  document.querySelector(".btn-child").innerText="➕ "+texts[lang].child+" hinzufügen";
+  document.querySelector(".btn-export").innerText=texts[lang].export;
+}
+
+// Restlicher JS-Code bleibt unverändert (showHomephone, noHomephone, addPerson, showOverview, goBack, sendData etc.)
+</script>
+</body>
+</html>

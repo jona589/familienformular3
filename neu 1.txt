@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Formular</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .add-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    .finish-btn {
+      background: #ff5722;
+      color: white;
+      width: 100%;
+    }
+    .confirm-btn {
+      background: #2196F3;
+      color: white;
+      width: 100%;
+    }
+    .person-block {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="title">Formular</h2>
+    
+    <!-- Sprache -->
+    <label for="lang">Sprache wählen / Выберите язык</label>
+    <select id="lang" onchange="setLanguage()">
+      <option value="de">Deutsch</option>
+      <option value="ru">Русский</option>
+    </select>
+
+    <div id="main-form">
+      <label id="lbl-name">Name</label>
+      <input type="text" id="name">
+
+      <label id="lbl-age">Alter</label>
+      <input type="number" id="age">
+
+      <label id="lbl-street">Straße</label>
+      <input type="text" id="street">
+
+      <label id="lbl-housenumber">Hausnummer</label>
+      <input type="text" id="housenumber">
+      <input type="checkbox" id="no-house" onchange="toggleHouse()"> <span id="lbl-nohouse">Keine Hausnummer</span>
+
+      <label id="lbl-zip">Postleitzahl</label>
+      <input type="text" id="zip">
+
+      <label id="lbl-city">Stadt</label>
+      <input type="text" id="city">
+
+      <label id="lbl-birth">Geburtsdatum</label>
+      <input type="date" id="birth">
+
+      <label id="lbl-mobile">Handynummer</label>
+      <input type="tel" id="mobile">
+
+      <label id="lbl-homephone">Haustelefonnummer</label>
+      <input type="tel" id="homephone">
+
+      <div>
+        <h3 id="lbl-addperson">Weitere Person hinzufügen</h3>
+        <select id="personType">
+          <option value="partner">Ehepartner</option>
+          <option value="child">Kind</option>
+        </select>
+        <button class="add-btn" onclick="addPerson()">Hinzufügen</button>
+      </div>
+
+      <div id="extraPersons"></div>
+
+      <button class="finish-btn" onclick="showOverview()" id="btn-finish">Ich bin fertig</button>
+    </div>
+
+    <!-- Übersicht -->
+    <div id="overview" style="display:none;">
+      <h3>Übersicht aller Personen</h3>
+      <table id="overviewTable">
+        <thead>
+          <tr>
+            <th>Rolle</th>
+            <th>Name</th>
+            <th>Alter</th>
+            <th>Straße</th>
+            <th>Hausnummer</th>
+            <th>PLZ</th>
+            <th>Stadt</th>
+            <th>Geburtsdatum</th>
+            <th>Handy</th>
+            <th>Haustelefon</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="confirm-btn" onclick="exportExcel()">Bestätigen und Excel speichern</button>
+    </div>
+  </div>
+
+  <script>
+    const texts = {
+      de: {
+        title: "Formular",
+        name: "Name",
+        age: "Alter",
+        street: "Straße",
+        housenumber: "Hausnummer",
+        nohouse: "Keine Hausnummer",
+        zip: "Postleitzahl",
+        city: "Stadt",
+        birth: "Geburtsdatum",
+        mobile: "Handynummer",
+        homephone: "Haustelefonnummer",
+        add: "Weitere Person hinzufügen",
+        finish: "Ich bin fertig",
+        partner: "Ehepartner",
+        child: "Kind",
+        overview: "Übersicht aller Personen",
+        confirm: "Bestätigen und Excel speichern"
+      },
+      ru: {
+        title: "Форма",
+        name: "Имя",
+        age: "Возраст",
+        street: "Улица",
+        housenumber: "Дом",
+        nohouse: "Без номера дома",
+        zip: "Почтовый индекс",
+        city: "Город",
+        birth: "Дата рождения",
+        mobile: "Мобильный номер",
+        homephone: "Домашний телефон",
+        add: "Добавить человека",
+        finish: "Я закончил",
+        partner: "Супруг(а)",
+        child: "Ребёнок",
+        overview: "Обзор всех людей",
+        confirm: "Подтвердить и сохранить Excel"
+      }
+    };
+
+    function setLanguage() {
+      let lang = document.getElementById("lang").value;
+      document.getElementById("title").innerText = texts[lang].title;
+      document.getElementById("lbl-name").innerText = texts[lang].name;
+      document.getElementById("lbl-age").innerText = texts[lang].age;
+      document.getElementById("lbl-street").innerText = texts[lang].street;
+      document.getElementById("lbl-housenumber").innerText = texts[lang].housenumber;
+      document.getElementById("lbl-nohouse").innerText = texts[lang].nohouse;
+      document.getElementById("lbl-zip").innerText = texts[lang].zip;
+      document.getElementById("lbl-city").innerText = texts[lang].city;
+      document.getElementById("lbl-birth").innerText = texts[lang].birth;
+      document.getElementById("lbl-mobile").innerText = texts[lang].mobile;
+      document.getElementById("lbl-homephone").innerText = texts[lang].homephone;
+      document.getElementById("lbl-addperson").innerText = texts[lang].add;
+      document.getElementById("btn-finish").innerText = texts[lang].finish;
+    }
+
+    function toggleHouse() {
+      document.getElementById("housenumber").disabled = 
+        document.getElementById("no-house").checked;
+    }
+
+    function addPerson() {
+      let lang = document.getElementById("lang").value;
+      let type = document.getElementById("personType").value;
+      let role = (type === "partner") ? texts[lang].partner : texts[lang].child;
+
+      let div = document.createElement("div");
+      div.className = "person-block";
+      div.setAttribute("data-role", role);
+      div.innerHTML = "<h4>"+role+"</h4>" +
+                      "<label>"+texts[lang].name+"</label><input type='text' class='pname'>" +
+                      "<label>"+texts[lang].birth+"</label><input type='date' class='pbirth'>" +
+                      "<label>"+texts[lang].mobile+"</label><input type='tel' class='pmobile'>";
+      document.getElementById("extraPersons").appendChild(div);
+    }
+
+    function showOverview() {
+      let data = collectData();
+      let tbody = document.querySelector("#overviewTable tbody");
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        let tr = document.createElement("tr");
+        row.forEach(cell => {
+          let td = document.createElement("td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      document.getElementById("main-form").style.display = "none";
+      document.getElementById("overview").style.display = "block";
+    }
+
+    function collectData() {
+      let rows = [];
+      rows.push([
+        "Hauptperson",
+        document.getElementById("name").value,
+        document.getElementById("age").value,
+        document.getElementById("street").value,
+        document.getElementById("no-house").checked ? "-" : document.getElementById("housenumber").value,
+        document.getElementById("zip").value,
+        document.getElementById("city").value,
+        document.getElementById("birth").value,
+        document.getElementById("mobile").value,
+        document.getElementById("homephone").value
+      ]);
+
+      let persons = document.querySelectorAll(".person-block");
+      persons.forEach(p => {
+        rows.push([
+          p.getAttribute("data-role"),
+          p.querySelector(".pname").value,
+          "", "-", "-", "-", "-", // kein Alter, keine Adresse
+          p.querySelector(".pbirth").value,
+          p.querySelector(".pmobile").value,
+          ""
+        ]);
+      });
+
+      return rows;
+    }
+
+    function exportExcel() {
+      let data = [["Rolle", "Name", "Alter", "Straße", "Hausnummer", "PLZ", "Stadt", "Geburtsdatum", "Handy", "Haustelefon"]];
+      data = data.concat(collectData());
+
+      let ws = XLSX.utils.aoa_to_sheet(data);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Daten");
+
+      // Dateiname: Name + Datum
+      let mainName = document.getElementById("name").value || "daten";
+      let today = new Date().toISOString().slice(0,10);
+      let filename = "Familie_" + mainName + "_" + today + ".xlsx";
+
+      XLSX.writeFile(wb, filename);
+    }
+  </script>
+</body>
+</html>
